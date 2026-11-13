@@ -55,7 +55,9 @@ jobs:
       - name: Run tests with ASan and UBSan
         run: make sanitizers
 
+      - name: Run tests with Valgrind
         run: make valgrind
+
   dast:
     name: DAST
     runs-on: ubuntu-24.04
