@@ -1,0 +1,3 @@
+# Keeps Linux line endings on every system, which matters for the Makefile
+# and the scripts run by the pipeline.
+* text=auto eol=lf

@@ -1,0 +1,41 @@
+# SAST rules for the Marginália C++ source code.
+# The official Semgrep C rules do not scan .cpp files, so the team keeps these.
+rules:
+  - id: unbounded-copy
+    languages: [cpp]
+    severity: ERROR
+    message: >-
+      strcpy copies the whole source without checking the size of the
+      destination and may write past the end of the array (CWE-120). Use a copy
+      bounded by the size of the destination, such as snprintf, or std::string.
+    pattern: strcpy($DEST, $SRC)
+
+  - id: unbounded-concatenation
+    languages: [cpp]
+    severity: ERROR
+    message: >-
+      strcat appends the source without checking the space left in the
+      destination and may write past the end of the array (CWE-120).
+    pattern: strcat($DEST, $SRC)
+
+  - id: unbounded-format
+    languages: [cpp]
+    severity: ERROR
+    message: >-
+      sprintf writes the formatted text without checking the size of the
+      destination and may write past the end of the array (CWE-120). Use snprintf.
+    pattern: sprintf($DEST, ...)
+
+  - id: removable-secret-wipe
+    languages: [cpp]
+    severity: WARNING
+    message: >-
+      This memset clears an array that is never read afterwards, so the compiler
+      may remove it during optimization and leave the contents in memory (CWE-14).
+      To erase a secret, use explicit_bzero.
+    patterns:
+      - pattern: memset($ARRAY, 0, ...);
+      - pattern-not-inside: |
+          memset($ARRAY, 0, ...);
+          ...
+          $FUNC(..., $ARRAY, ...);
